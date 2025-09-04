@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Order Confirmation - Gugu's Kitchen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: url("Image/kota-background.jpg.jpg") center/cover no-repeat, #3d3d3d;
+    margin: 0; padding: 0; color: #333;
+}
+header {
+    background: rgba(255,255,255,0.95);
+    text-align: center; padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+header h1 {
+    font-size: 28px; color: #d35400; margin: 10px 0;
+}
+nav ul {
+    list-style: none; display: flex; justify-content: center; gap: 20px;
+    padding: 10px 0; margin: 15px 0 0 0;
+}
+nav ul li a {
+    text-decoration: none; font-weight: bold; color: #555;
+    padding: 8px 15px; border-radius: 8px; transition: 0.3s;
+    background: rgba(214, 84, 0, 0.1);
+}
+nav ul li a:hover { background: #d35400; color: white; }
+.container {
+    max-width: 800px; margin: 30px auto; padding: 25px 20px;
+    background: rgba(255,255,255,0.95); border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25); color: #444;
+    text-align: center;
+}
+h2 { color: #d35400; font-size: 26px; margin-bottom: 20px; }
+.order-details { margin: 15px 0; font-size: 1em; text-align: left; background: #eee; padding: 12px; border-radius: 10px; color: #333; }
+.order-details p { margin: 5px 0; }
+table {
+    width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+th, td { padding: 14px; text-align: center; border-bottom: 1px solid #ddd; font-size: 1em; }
+th { background: #d35400; color: #fff; font-weight: bold; }
+.total { margin-top: 15px; font-size: 1.3em; font-weight: bold; text-align: right; }
+.buttons { margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+.button {
+    padding: 14px 30px; background: linear-gradient(135deg, #d35400, #e67e22);
+    color: white; text-decoration: none; font-size: 18px; border-radius: 12px;
+    cursor: pointer; transition: 0.3s; font-weight: bold; border: none;
+}
+.button:hover { background: linear-gradient(135deg, #e67e22, #d35400); }
+.print-btn { background: #007bff; }
+.print-btn:hover { background: #0056b3; }
+.checkmark { width: 90px; height: 90px; margin: 0 auto 20px; border-radius: 50%; display: block; stroke-width: 2; stroke: #4BB543; stroke-miterlimit: 10; box-shadow: inset 0px 0px 0px #4BB543; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; }
+.checkmark-circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #4BB543; fill: none; animation: stroke 0.6s cubic-bezier(0.65,0,0.45,1) forwards; }
+.checkmark-check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65,0,0.45,1) 0.6s forwards; }
+@keyframes stroke { 100% { stroke-dashoffset: 0; } }
+@keyframes scale { 0%,100%{transform:none;} 50%{transform:scale3d(1.1,1.1,1);} }
+@keyframes fill { 100% { box-shadow: inset 0px 0px 0px 30px #4BB543; } }
+
+@media (max-width: 768px){ .container{padding:20px;} table{font-size:0.9em;} th, td{padding:10px;} .total{font-size:1.1em;} .button{padding:12px 20px; font-size:16px;} }
+@media (max-width: 480px){ .container{padding:15px;} table{font-size:0.8em;} th, td{padding:8px;} .total{font-size:1em;} .button{padding:10px 15px; font-size:15px;} }
+</style>
+</head>
+<body>
+<header>
+    <h1>✅ Order Confirmation</h1>
+    <nav>
+        <ul>
+            <li><a href="catalogue.html">Catalogue</a></li>
+            <li><a href="comments.html">Comments</a></li>
+            <li><a href="cart.html">Cart 🛒</a></li>
+            <li><a href="index.html">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="container" id="receipt">
+    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+      <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+      <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+    </svg>
+
+    <h2>Thank you for your order!</h2>
+    <div class="order-details">
+        <p id="order-number"></p>
+        <p id="order-date"></p>
+        <p id="customer-info"></p>
+    </div>
+
+    <h3>Order Summary</h3>
+    <table id="confirmation-table">
+        <thead>
+            <tr><th>Item</th><th>Price (R)</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <p class="total">Total: R<span id="total-price">0</span></p>
+
+    <div class="buttons">
+        <a href="catalogue.html" class="button">⬅ Back to Catalogue</a>
+        <button class="button print-btn" onclick="window.print()">🖨 Print Receipt</button>
+    </div>
+</div>
+
+<script>
+   
+let order = JSON.parse(localStorage.getItem("lastOrder"));
+if(order){
+    if(!order.orderNumber){ order.orderNumber = "GK"+Math.floor(Math.random()*1000000); order.orderDate = new Date().toLocaleString(); localStorage.setItem("lastOrder",JSON.stringify(order)); }
+    document.getElementById("order-number").textContent = "Order Number: "+order.orderNumber;
+    document.getElementById("order-date").textContent = "Order Date: "+order.orderDate;
+    document.getElementById("customer-info").textContent = `Customer: ${order.name} | Contact: ${order.contact} | Payment: ${order.paymentMethod}`;
+    const tbody = document.querySelector("#confirmation-table tbody");
+    let total=0;
+    order.items.forEach(item=>{ const row=document.createElement("tr"); row.innerHTML=`<td>${item.name}</td><td>${parseFloat(item.price).toFixed(2)}</td>`; tbody.appendChild(row); total+=parseFloat(item.price); });
+    document.getElementById("total-price").textContent = total.toFixed(2);
+} else { alert("No recent order found. Redirecting to catalogue..."); window.location.href="catalogue.html"; }
+</script>
+</body>
+</html>

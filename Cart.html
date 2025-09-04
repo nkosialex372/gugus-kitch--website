@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart - Gugu's Kitchen</title>
+<style>
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: url("Image/kota-background.jpg.jpg") center/cover no-repeat, #3a3a3a;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    header {
+        background: rgba(255,255,255,0.95);
+        text-align: center;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    header h1 {
+        font-size: 28px;
+        color: #d35400;
+        margin: 10px 0;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 10px 0;
+        margin: 15px 0 0 0;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        font-weight: bold;
+        color: #555;
+        padding: 8px 15px;
+        border-radius: 8px;
+        transition: 0.3s;
+        background: rgba(214, 84, 0, 0.1);
+    }
+
+    nav ul li a:hover {
+        background: #d35400;
+        color: white;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 20px;
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+        color: #444;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #d35400;
+        font-size: 26px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background: #d35400;
+        color: white;
+        font-weight: bold;
+    }
+
+    .remove-btn {
+        background: #e74c3c;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .remove-btn:hover {
+        background: #c0392b;
+    }
+
+    .total {
+        text-align: right;
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .checkout-btn {
+        display: block;
+        width: 50%;
+        margin: 25px auto 0 auto;
+        padding: 15px;
+        background: linear-gradient(135deg, #d35400, #e67e22);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .checkout-btn:hover {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+        transform: translateY(-2px);
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>🛒 Your Cart</h1>
+    <nav>
+        <ul>
+            <li><a href="catalog.html">Catalogue</a></li>
+            <li><a href="comments.html">Comments</a></li>
+            <li><a href="cart.html">Cart 🛒 (<span id="cart-count">0</span>)</a></li>
+            <li><a href="index.html">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>Cart Items</h2>
+    <table id="cart-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price (R)</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Cart items will load here -->
+        </tbody>
+    </table>
+
+    <p class="total">Total: R<span id="total-price">0</span></p>
+    <button class="checkout-btn" onclick="proceedToPayment()">Proceed to Payment</button>
+</div>
+
+<script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function updateCartCount() {
+        document.getElementById("cart-count").textContent = cart.length;
+    }
+
+    function renderCart() {
+        const tbody = document.querySelector("#cart-table tbody");
+        tbody.innerHTML = "";
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.price}</td>
+                <td><button class="remove-btn" onclick="removeFromCart(${index})">Remove</button></td>
+            `;
+            tbody.appendChild(row);
+            total += item.price;
+        });
+
+        document.getElementById("total-price").textContent = total;
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        renderCart();
+    }
+
+    function proceedToPayment() {
+        if(cart.length === 0){
+            alert("Your cart is empty!");
+            return;
+        }
+        window.location.href = "payment.html";
+    }
+
+    updateCartCount();
+    renderCart();
+</script>
+
+</body>
+</html>
